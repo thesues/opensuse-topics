@@ -1,0 +1,111 @@
+\documentclass[adobefonts]{ctexart}
+%\documentclass[winfonts]{ctexart}
+
+\CTEXoptions[captiondelimiter={\quad}]
+
+
+\usepackage{amsmath}            % AMS的数学宏包
+\usepackage{amssymb}            % AMS的数学符号宏包
+\usepackage{graphicx}           % 插入图片需要的宏包
+\usepackage{float}              % 强大的浮动环境控制宏包
+\usepackage{enumitem}           % 增强列表功能
+\usepackage{alltt}              % 在`alltt'环境中为等宽字体, 但可以使用LaTeX命令
+
+% \usepackage{shortvrb}           % 简化\verb的写法
+% \MakeShortVerb{\|}
+\usepackage{listings}
+\lstset{language=bash}
+\lstset{extendedchars=false}
+\lstset{breaklines}
+\lstset{stepnumber=2}
+\lstset{backgroundcolor=\color{lightgray}}
+
+
+\usepackage{color}              % 可以定义各种颜色
+\usepackage[x11names]{xcolor}   % 下面的RoyalBlue3颜色需要用到的宏包
+
+
+
+% 自定义的几种颜色
+\definecolor{shadecolor}{gray}{0.85}
+
+% \definecolor{darkblue}{rgb}{52,101,164}
+% \definecolor{darkgreen}{rgb}{78,154,6}
+
+% % 设置背景颜色
+% \definecolor{bisque}{rgb}{.996,.891,.755}
+% \pagecolor{bisque}
+
+\usepackage[pdfauthor={Dreamseeker},
+  pdftitle={pidgin玩转微博,QQ,MSN,飞信},
+  colorlinks=true,
+  urlcolor=blue,
+  linkcolor=RoyalBlue3]{hyperref} % 为超链接设置颜色, 修改PDF文件信息
+
+%\CTEXsetup[name={实验,},number={\chinese{section}}]{section}
+
+
+\title{\textbf{pidgin玩转微博，QQ，MSN，飞信～}}
+\author{deanraccoon@gmail.com}
+% \date{}
+
+\usepackage[pagestyles]{titlesec} % 定制页眉页脚
+ % 设置页眉页脚
+ \newpagestyle{main}{%
+   \sethead[$\cdot$~\thepage~$\cdot$][][\thesection\quad%
+   \sectiontitle]{\thesection\quad\sectiontitle}{}{%
+   $\cdot$~\thepage~$\cdot$}
+   \setfoot{}{\url{http://code.google.com/p/opensuse-topics/}}{}\headrule}
+\pagestyle{main}
+%\renewpagestyle{plain}{\sethead{}{}{}\setfoot{}{}{}}
+%\pagestyle{plain}
+
+\usepackage[top=0.75in,bottom=0.5in,left=1in,right=1in]{geometry} % 设置页边距
+
+\setlength{\belowcaptionskip}{1em} % 设置caption之后的距离
+
+% For LaN
+\newcommand{\LaN}{L{\scriptsize\hspace{-0.47em}\raisebox{0.23em}{A}}\hspace{-0.1em}N}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+pidgin是一个支持多个协议的跨平台应用程序，(包括winows和linux平台),官方支持的协议包括
+ICQ,AIM,google talk,msn,yahoo,irc等等。但中国用户，我们经常用到的是msn,qq,飞信等。
+首先要感谢开源社区的无偿贡献,尤其是我们自己中国人的贡献，现在可以用pidign登录qq，飞信，
+甚至新浪微博了!
+
+\section{MSN}
+呃..新建一个帐户，选msn就可以了...pidgin默认支持，没什么好说的
+
+\section{QQ}
+pidgin的默认qq协议太老了，现在已经不能用。请移步这里
+\begin{verbatim}
+http://code.google.com/p/libqq-pidgin/
+\end{verbatim}
+
+2种安装方法,要么下载源代码自己编译，要不下载网站上的rpm包安装，
+我已经试用过了，比较好用！就是群的功能现在还不完善.
+
+\section{飞信}
+上飞信?\\
+请移步
+\begin{verbatim}
+http://code.google.com/p/ofetion
+\end{verbatim}
+
+下载其中pidgin-ofetion的源代码，安装就ok了～
+
+\section{新浪微博}
+用pidgin看微博，发微博？
+移步\\
+http://code.google.com/p/libpurple-microblog-sina
+下载源代码包，安装也ok了.注意这个插件不会存储你的新浪
+微博的用户名，密码，登录的时候它会弹出一个浏览器窗口认证
+
+
+\input{../readme}
+\end{document}

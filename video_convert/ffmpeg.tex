@@ -1,0 +1,211 @@
+\documentclass[adobefonts]{ctexart}
+%\documentclass[winfonts]{ctexart}
+
+\CTEXoptions[captiondelimiter={\quad}]
+
+
+\usepackage{amsmath}            % AMS的数学宏包
+\usepackage{amssymb}            % AMS的数学符号宏包
+\usepackage{graphicx}           % 插入图片需要的宏包
+\usepackage{float}              % 强大的浮动环境控制宏包
+\usepackage{framed}             % `shaded'环境需要用到
+\usepackage{enumitem}           % 增强列表功能
+\usepackage{alltt}              % 在`alltt'环境中为等宽字体, 但可以使用LaTeX命令
+
+% \usepackage{shortvrb}           % 简化\verb的写法
+% \MakeShortVerb{\|}
+\usepackage{listings}
+\lstset{language=bash}
+\lstset{extendedchars=false}
+\lstset{breaklines}
+\lstset{stepnumber=2}
+\lstset{backgroundcolor=\color{lightgray}}
+
+
+\usepackage{color}              % 可以定义各种颜色
+\usepackage[x11names]{xcolor}   % 下面的RoyalBlue3颜色需要用到的宏包
+% 自定义的几种颜色
+\definecolor{shadecolor}{gray}{0.85}
+
+% \definecolor{darkblue}{rgb}{52,101,164}
+% \definecolor{darkgreen}{rgb}{78,154,6}
+
+% % 设置背景颜色
+% \definecolor{bisque}{rgb}{.996,.891,.755}
+% \pagecolor{bisque}
+
+\usepackage[pdfauthor={Dreamseeker},
+  pdftitle={用ffmpeg转换视频格式},
+  colorlinks=true,
+  urlcolor=blue,
+  linkcolor=RoyalBlue3]{hyperref} % 为超链接设置颜色, 修改PDF文件信息
+
+%\CTEXsetup[name={实验,},number={\chinese{section}}]{section}
+
+
+\title{\textbf{用ffmpeg转换视频格式}}
+\author{deanraccoon@gmail.com}
+% \date{}
+
+\usepackage[pagestyles]{titlesec} % 定制页眉页脚
+% % 设置页眉页脚
+% \newpagestyle{main}{%
+%   \sethead[$\cdot$~\thepage~$\cdot$][][\thesection\quad%
+%   \sectiontitle]{\thesection\quad\sectiontitle}{}{%
+%   $\cdot$~\thepage~$\cdot$}
+%   \setfoot{}{}{}\headrule}
+% \pagestyle{main}
+% \renewpagestyle{plain}{\sethead{}{}{}\setfoot{}{}{}}
+\pagestyle{plain}
+
+\usepackage[top=0.75in,bottom=0.5in,left=1in,right=1in]{geometry} % 设置页边距
+
+\setlength{\belowcaptionskip}{1em} % 设置caption之后的距离
+
+% For LaN
+\newcommand{\LaN}{L{\scriptsize\hspace{-0.47em}\raisebox{0.23em}{A}}\hspace{-0.1em}N}
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+\section{实用fffmpeg命令}
+\begin{verbatim}
+转自
+http://www.catswhocode.com/blog/19-ffmpeg-commands-for-all-needs
+	转自
+	http://www.jcartier.net/spip.php?article36
+\end{verbatim}
+\subsection{查看视频文件信息} 
+\begin{verbatim}
+ffmpeg -i video.avi
+\end{verbatim}
+\subsection{N个图片转化视频}
+\begin{verbatim}
+ffmpeg -f image2 -i image%d.jpg video.mpg
+\end{verbatim}
+这个命令把当前文件夹下所有图片转成视频文件
+
+\subsection{视频转化图片}
+\begin{verbatim}
+ffmpeg video.mpg image%d.jpg
+\end{verbatim}
+图片格式包括:PGM, PPM, PAM, PGMYUV, JPEG, GIF, PNG, TIFF, SGI
+\subsection{视频转为iphone可播放的格式}
+\begin{verbatim}
+ffmpeg source_video.avi input -acodec aac -ab 128kb -vcodec mpeg4 -b 1200kb -mbd 2 -flags 
++4mv+trell -aic 2 -cmp 2 -subcmp 2 -s 320x180 -title X final_video.mp4
+\end{verbatim}
+参数含义:
+\begin{itemize}
+\item 源文件: source\_video.avi
+\item 音频编码 : aac
+\item 音频的比特率 : 128kb/s
+\item 视频编码 : mpeg4
+\item 视频比特率 : 1200kb/s
+\item 视频大小 : 320px par 180px
+\item 结果文件 : final\_video.mp4
+\end{itemize}
+
+\subsection{视频转换成psp格式}
+\begin{verbatim}
+ffmpeg -i source_video.avi -b 300 -s 320x240 -vcodec xvid -ab 32 -ar 24000 -acodec aac final_video.mp4
+\end{verbatim}
+参数含义:
+\begin{itemize}
+\item 源文件: source\_video.avi
+\item 音频编码 : aac
+\item 音频比特率 : 32kb/s
+\item 视频编码 : xvid
+\item 视频比特率 : 1200kb/s
+\item 视频大小: 320px par 180px
+\item 结果文件: final\_video.mp4
+\end{itemize}
+
+\subsection{提取视频音轨}
+\begin{verbatim}
+ffmpeg source_video.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 sound.mp3
+\end{verbatim}
+参数含义:
+\begin{itemize}
+\item 源文件 : source\_video.avi
+\item 音频比特率 : 192kb/s
+\item 输出格式 : mp3
+\item 结果文件 : sound.mp3
+\end{itemize}
+
+\subsection{wav转成mp3}
+\begin{verbatim}
+ffmpeg -i son_origine.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 son_final.mp3
+\end{verbatim}
+
+\subsection{avi转mpg}
+\begin{verbatim}
+ffmpeg video_origine.avi video_finale.mpg
+\end{verbatim}
+
+\subsection{mpg转avi}
+\begin{verbatim}
+ffmpeg video_origine.mpg video_finale.avi
+\end{verbatim}
+
+\subsection{avi转gif(无压缩)}
+\begin{verbatim}
+ffmpeg video_origine.avi gif_anime.gif
+\end{verbatim}
+
+\subsection{混合视频和音频}
+\begin{verbatim}
+ffmpeg -i son.wav -i video_origine.avi video_finale.mpg
+\end{verbatim}
+
+\subsection{avi转flv}
+\begin{verbatim}
+ffmpeg video_origine.avi -ab 56 -ar 44100 -b 200 -r 15 -s 320x240 -f flv video_finale.flv
+\end{verbatim}
+
+\subsection{avi转dv}
+\begin{verbatim}
+ffmpeg video_origine.avi -s pal -r pal -aspect 4:3 -ar 48000 -ac 2 video_finale.dv
+或者:
+ffmpeg -i video_origine.avi -target pal-dv video_finale.dv
+\end{verbatim}
+
+\subsection{avi转dvd players}
+\begin{verbatim}
+ffmpeg -i source_video.avi -target pal-dvd -ps 2000000000 -aspect 16:9 finale_video.mpeg
+\end{verbatim}
+参数解释:
+\begin{itemize}
+\item target pal-dvd : 输出文件格式
+\item ps 2000000000: 限制输出文件的占用最大空间(单位bits,这里是表示2G比特，换算成字节是250M字节)
+\item aspect 16:9 : 宽高比 16:9 表示是宽屏幕，如果是普通屏幕，是4:3
+\end{itemize}
+
+\subsection{avi转divx}
+\begin{verbatim}
+ffmpeg video_origine.avi -s 320x240 -vcodec msmpeg4v2 video_finale.avi
+\end{verbatim}
+
+\subsection{ogm转mpeg dvd}
+\begin{verbatim}
+ffmpep film_sortie_cinelerra.ogm -s 720x576 -vcodec mpeg2video -acodec mp3 film_termin.mpg
+\end{verbatim}
+
+\subsection{avi转SVCD mpeg2}
+\begin{verbatim}
+ffmpeg -i video_origine.avi -target ntsc-svcd video_finale.mpg
+\end{verbatim}
+
+\subsection{avi转VCD mpeg2}
+NTSC制式(日本，美国)
+\begin{verbatim}
+ffmpeg -i video_origine.avi -target ntsc-vcd video_finale.mpg
+\end{verbatim}
+
+PAL制式(欧洲，中国)
+\begin{verbatim}
+ffmpeg -i video_origine.avi -target pal-vcd video_finale.mpg
+\end{verbatim}
+\input{../readme}
+\end{document}

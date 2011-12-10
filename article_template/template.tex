@@ -1,0 +1,30 @@
+\input{../header.tex}
+\author{作者}
+\title{这是一个模板}
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+\section{第一章}
+\subsection{第二章的子章节}
+\section{第二章}
+引用代码
+\begin{verbatim}
+latex2html -local_icons -html_version 4.0,latin1,unicode
+\end{verbatim}
+插入图片
+\begin{figure}[htbp]
+  \includegraphics[width=5cm]{cat.png}
+\end{figure}
+\subsection{列表}
+\begin{itemize}
+\item 星号开头的item1
+\item 星号开头的item2
+\end{itemize}
+
+\begin{enumerate}
+\item 数字开头的item1
+\item 数字开头的item2
+\end{enumerate}
+
+\end{document}

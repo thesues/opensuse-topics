@@ -1,0 +1,138 @@
+\input{../header.tex}
+\author{BinLi (binli@opensuse.org)}
+\title{如何跟踪无线问题}
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+\section{如何跟踪无线问题}
+\subsection{引子}
+在使用 linux桌面时经常会碰到无法建立无线连接，那么，为了使大家能够快速的解决一些初级的错误，在这里
+介绍一下当碰到问题应做些什么来帮助解决问题。当自己无法解决时，那么如何能够给维护人员提供更有用的信
+息来减少问题的解决时间。
+\subsection{涉及的组件}
+建立无线连接主要使用的组件如下：
+\begin{itemize}
+\item nm-applet (GNOME) 或 KNetworkManager (KDE)
+\item NetworkManager 和 YaST
+\item wpa\_supplicant
+\item 网上驱动
+\end{itemize}
+
+\subsection{易犯的错误}
+\subsubsection{MAC地址过滤}
+注意你的无线接入点(AP)的MAC地址过滤功能，如果已经开启，需要添加你的无线网卡的地址，建议禁用此功能。
+\subsubsection{开关}
+许多内置的无线网卡可以通过开头来启用或禁用，所以需要注意是否开头已经打开。
+\subsubsection{固件}
+一些无线网卡驱动需要固件（如iwl3945, iwlagn, b43, ...），许多固件在openSUSE的平台已经提供
+（如iwl3945-ucode 和 ralink-firmware），而一些因为版权的原因不能提供，因此您需要自己手动的安装，有
+些还可以通过 /usr/bin 下的脚本来安装（如install\_acx100\_firmware，install\_bcm43xx\_firmware 和
+install\_intersil\_firmware）。
+那么如何决定是否你缺少固件呢，查看dmesg吧
+dmesg | less
+\subsection{NetworkManager}
+当使用 NetworkManager 来管理您的网络的时候碰见问题，以下的日志将会很有用：
+\begin{itemize}
+\item /var/log/NetworkManager
+\item /var/log/wpa\_supplicant.log
+\item dmesg 的输出
+\end{itemize}
+
+\subsubsection{让 wpa\_supplicant 输出更多的调试信息}
+\begin{enumerate}
+\item 更改配置文件，系统重启仍有效
+
+  编辑 /usr/share/dbus-1/system-services/fi.epitest.hostap.WPASupplicant.service 文件
+
+  把下面的行
+
+  Exec=/usr/sbin/wpa\_supplicant -c /etc/wpa\_supplicant/wpa\_supplicant.conf -u -f /var/log/wpa\_supplicant.log
+
+  更改为
+
+  Exec=/usr/sbin/wpa\_supplicant -c /etc/wpa\_supplicant/wpa\_supplicant.conf -u -dddt -f /var/log/wpa\_supplicant.log
+
+  用 root 权限来运行下面的命令：
+\begin{verbatim}
+	> rcnetwork stop
+	> killall wpa\_supplicant
+	> rcnetwork start
+\end{verbatim}
+
+  现在 wpa\_supplicant 将会写更多的日志到 /var/log/wpa\_supplicant.log 文件中。
+
+\item 临时更改
+
+  在程序运行时，openSUSE 提供了一个捕获特定信号来修改调试级别的补丁，这个只是openSUSE 平台我有的，上游的
+  代码仍没有这个功能。
+
+  只要运行：
+\begin{verbatim}
+	> kill -SIGUSR1 `pidof wpa\_supplicant`
+\end{verbatim}
+  日志文件 /var/log/wpa\_supplicant.log 将会输出更多的调试信息。
+\end{enumerate}
+\subsection{如何手动建立无线连接}
+\begin{enumerate}
+\item 停止 NetworkManager 和 wpa\_supplicant
+\begin{verbatim}
+	> rcnetwork stop
+	> killall wpa\_supplicant
+\end{verbatim}
+  如果无线接入点没使用安全设置，或 WEP 模式的安全链接，使用 iwconfig 就可以建立连接。
+  但所有其它的连接（WPA-PSK, WPA-EAP, 802.1x 动态 WEP ）都需要使用wpa\_supplicant。
+
+\item 基本命令
+
+  首先用 iwconfig 来找到无线网卡所使用的接口。
+\begin{verbatim}
+	> iwconfig
+	lo        no wireless extensions.
+
+	eth1      no wireless extensions.
+
+	eth0      unassociated  ESSID:""
+	Mode:Managed  Frequency=2.412 GHz  Access Point: Not-Associated
+	Bit Rate:0 kb/s   Tx-Power=20 dBm   Sensitivity=8/0
+	Retry limit:7   RTS thr:off   Fragment thr:off
+	Encryption key:off
+	Power Management:off
+	Link Quality:0  Signal level:0  Noise level:0
+	Rx invalid nwid:0  Rx invalid crypt:3  Rx invalid frag:0
+	Tx excessive retries:0  Invalid misc:53   Missed beacon:0
+\end{verbatim}
+
+  在这个例子中 eth0 是无线网上的接口。
+
+  如果您不知道无线接入点的名字（Essid），可以使用下面命令扫描。
+\begin{verbatim}
+	> iwlist eth0 scan
+	...
+	Cell 02 - Address: XX:XX:XX:XX:XX:XX
+	ESSID:"XXXXXX"
+	Protocol:IEEE 802.11bg
+	Mode:Master
+	Channel:2
+Frequency:2.417 GHz (Channel 2)
+	Encryption key:off
+	Bit Rates:1 Mb/s; 2 Mb/s; 5.5 Mb/s; 6 Mb/s; 9 Mb/s
+	11 Mb/s; 12 Mb/s; 18 Mb/s; 24 Mb/s; 36 Mb/s
+	48 Mb/s; 54 Mb/s
+	Quality=37/100  Signal level=-78 dBm
+	Extra: Last beacon: 488ms ago
+	...
+\end{verbatim}
+
+  如果您的无线接入点并没有显示出来，可能是由于没有广播essid，那么可以扫描特定的名字，如下：
+
+\begin{verbatim}
+	> iwlist eth0 scan essid your\_essid\_here
+	...
+\end{verbatim}
+\end{enumerate}
+
+\subsection{借助监听模式抓包}
+\subsection{引用链接}
+
+\end{document}

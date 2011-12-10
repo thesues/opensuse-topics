@@ -1,0 +1,35 @@
+OLD_PATH=$PATH
+PATH=/usr/local/bin:/usr/bin:/opt/kde3/bin:$PATH
+
+if ! type -p fcitx > /dev/null 2>&1 ; then
+    echo "fcitx is not available."
+    return 1
+fi
+
+export XMODIFIERS=@im=fcitx
+export GTK_IM_MODULE=fcitx
+export QT_IM_SWITCHER=imsw-multi
+export QT_IM_MODULE=fcitx
+case "$WINDOWMANAGER" in
+    /opt/kde3/bin/startkde)
+        if ! type -p skim > /dev/null 2>&1 \
+          || grep -i -q "^[[:space:]]*Autostart.*=.*false" $HOME/.kde/share/config/skimrc
+        then
+            fcitx -d
+        else
+        # skim will be  used. But we don't start it here,
+        # we rely on the KDE3 autostart
+        # mechanism used in the skim package instead.
+        # skim -d
+        :
+        fi
+    ;;
+    *)
+        fcitx -d
+    ;;
+esac
+
+PATH=$OLD_PATH
+
+# success:
+return 0

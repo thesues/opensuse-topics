@@ -1,0 +1,219 @@
+\documentclass[adobefonts]{ctexart}
+%\documentclass[winfonts]{ctexart}
+
+\CTEXoptions[captiondelimiter={\quad}]
+
+
+\usepackage{amsmath}            % AMS的数学宏包
+\usepackage{amssymb}            % AMS的数学符号宏包
+\usepackage{graphicx}           % 插入图片需要的宏包
+\usepackage{float}              % 强大的浮动环境控制宏包
+\usepackage{framed}             % `shaded'环境需要用到
+\usepackage{enumitem}           % 增强列表功能
+\usepackage{alltt}              % 在`alltt'环境中为等宽字体, 但可以使用LaTeX命令
+
+% \usepackage{shortvrb}           % 简化\verb的写法
+% \MakeShortVerb{\|}
+\usepackage{listings}
+\lstset{language=bash}
+\lstset{extendedchars=false}
+\lstset{breaklines}
+\lstset{stepnumber=2}
+\lstset{backgroundcolor=\color{lightgray}}
+
+
+\usepackage{color}              % 可以定义各种颜色
+\usepackage[x11names]{xcolor}   % 下面的RoyalBlue3颜色需要用到的宏包
+% 自定义的几种颜色
+\definecolor{shadecolor}{gray}{0.85}
+
+% \definecolor{darkblue}{rgb}{52,101,164}
+% \definecolor{darkgreen}{rgb}{78,154,6}
+
+% % 设置背景颜色
+% \definecolor{bisque}{rgb}{.996,.891,.755}
+% \pagecolor{bisque}
+
+\usepackage[pdfauthor={Dreamseeker},
+  pdftitle={openSUSE 11.4 安装ATI驱动},
+  colorlinks=true,
+  urlcolor=blue,
+  linkcolor=RoyalBlue3]{hyperref} % 为超链接设置颜色, 修改PDF文件信息
+
+%\CTEXsetup[name={实验,},number={\chinese{section}}]{section}
+
+
+\title{\textbf{openSUSE 11.4 安装ATI驱动}}
+\author{kroodylove@gmail.com}
+% \date{}
+
+\usepackage[pagestyles]{titlesec} % 定制页眉页脚
+% % 设置页眉页脚
+% \newpagestyle{main}{%
+%   \sethead[$\cdot$~\thepage~$\cdot$][][\thesection\quad%
+%   \sectiontitle]{\thesection\quad\sectiontitle}{}{%
+%   $\cdot$~\thepage~$\cdot$}
+%   \setfoot{}{}{}\headrule}
+% \pagestyle{main}
+% \renewpagestyle{plain}{\sethead{}{}{}\setfoot{}{}{}}
+\pagestyle{plain}
+
+\usepackage[top=0.75in,bottom=0.5in,left=1in,right=1in]{geometry} % 设置页边距
+
+\setlength{\belowcaptionskip}{1em} % 设置caption之后的距离
+
+% For LaN
+\newcommand{\LaN}{L{\scriptsize\hspace{-0.47em}\raisebox{0.23em}{A}}\hspace{-0.1em}N}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\newpage
+\section{生活要有驱动才可以}
+一个喜欢折腾的人是希望能尽可能榨干硬件最后一点血汗为自己干活，犹如资本家一样，我的机器比较老了华硕G2p 07年算是牛逼的游戏本了吧，显卡ATIX 1700跑星际2 不开特效也嗷嗷的没问题，
+在换了openSUSE11.4之后用默认的open source 驱动有不少问题，比如打开emacs的时候会花屏，反正就各种花屏 各种不爽，无奈只好开始折腾。费了很长时间才把驱动装上，因为一次update kernel之后不得不重新再弄一次，俗话说：好记性不如烂笔头，索性记下来比较好 :)
+
+\section{开始折腾}
+\href{官网在此}{http://support.amd.com/us/gpudownload/Pages/index.aspx}
+
+\href{google}{http://www.google.com/}
+
+\subsection{直接安装}
+
+我已经下好了，文件名字为
+\begin{verbatim}
+ati-driver-installer-11-3-x86.x86_64.run
+\end{verbatim}
+加上可执行权限,以下root权限操作
+\begin{verbatim}
+chmod +x ati-driver-installer-11-3-x86.x86_64.run
+\end{verbatim}
+这样就可以了,下面开始安装
+\begin{verbatim}
+./ati-driver-installer-11-3-x86.x86_64.run
+\end{verbatim}
+后面的全是图形操作的了，自己看看就明白了，实在不明白就都选默认就ok了。如果顺利的话装上就可以用了，如果你和我一样不幸那么继续下一步（我执行后就花屏了  坑爹啊）
+\subsection{源码编译安装} % (fold)
+可以切换到console模式运行，这样子就不会花屏了，但是这样虽然安装完了 但是提示安装失败
+这时候我们需要揭开这个驱动文件的真面目了
+\begin{verbatim}
+./ati-driver-installer-11-3-x86.x86_64.run --help
+Makeself version 2.1.3 
+ 1) Getting help or info about ./ati-driver-installer-11-3-x86.x86_64.run :
+  ./ati-driver-installer-11-3-x86.x86_64.run -h|--help                     Print this message
+  ./ati-driver-installer-11-3-x86.x86_64.run -i|--info                     Print embedded info : title, default target directory, embedded script 
+  ./ati-driver-installer-11-3-x86.x86_64.run -l|--list                     Print the list of files in the archive
+  ./ati-driver-installer-11-3-x86.x86_64.run -c|--check                    Checks integrity of the archive
+  ./ati-driver-installer-11-3-x86.x86_64.run --extract NewDirectory        Extract this package to NewDirectory only
+ 
+ 2) Running ./ati-driver-installer-11-3-x86.x86_64.run :
+  ./ati-driver-installer-11-3-x86.x86_64.run [options] [additional arguments to embedded script] with following options (in that order)
+  --keep                              Do not erase target directory after running the embedded script
+  --uninstall[=force|dryrun]          Run ATI Catalyst(TM) Proprietary Driver Uninstall
+  Following arguments will be passed to the embedded script:
+  --install                           Install the driver(default)
+  --listpkg                           List all the generatable packages 
+  --buildpkg package                  Build "package" if generatable ("package" as returned by --listpkg)
+  --buildandinstallpkg package        Build and Install "package" as returned by --listpkg
+所以这里我们加个参数--extract就可以了
+./ati-driver-installer-11-3-x86.x86_64.run --extract
+cd fglrx-install.VZd8o4/
+\end{verbatim}
+打开这个文件
+\begin{verbatim}
+common/lib/modules/fglrx/build_mod/fglrxko_pci_ids.h
+\end{verbatim}
+查看下你的显卡id
+\begin{verbatim}
+hwinfo --display
+
+22: PCI 700.0: 0300 VGA compatible controller (VGA)             
+  [Created at pci.318]
+  Unique ID: aK5u.UIwW5Y0NdeA
+  Parent ID: vSkL.zHaCuV+XoH8
+  SysFS ID: /devices/pci0000:00/0000:00:01.0/0000:07:00.0
+  SysFS BusID: 0000:07:00.0
+  Hardware Class: graphics card
+  Model: "ATI M66-P [Mobility Radeon X1700]"
+  Vendor: pci 0x1002 "ATI Technologies Inc"
+  Device: pci 0x71d5 "M66-P [Mobility Radeon X1700]"
+在文件中加一行：
+FGL_ASIC_ID(0x71D5),
+\end{verbatim}
+保存退出
+编译
+\begin{verbatim}
+./ati-installer.sh 
+=====================================================================
+ ATI Technologies Catalyst(TM) Proprietary Driver Installer/Packager 
+=====================================================================
+Unrecognized parameter '' to ati-installer.sh
+This script supports the following arguments:
+--help                                        : print help messages
+--listpkg                                     : print out a list of generatable packages
+--buildpkg [package] [--dryrun]               : if generatable, the package will be created
+--buildandinstallpkg [package] [--dryrun]     : if generatable, the package will be creadted and installed
+--install                                     : install the driver
+
+\end{verbatim}
+这里由于解开的./ati-installer.sh 里面写的有点问题，所以执行的时候有可能会报错，所以要注意点,第二个参数随便敲个字符串就行
+\begin{verbatim}
+./ati-installer.sh Ssdfs  --install SuSE/SUSE114-IA32
+\end{verbatim}
+
+\begin{verbatim}
+\end{verbatim}
+这样子就可以了,然后可以按下面这样做禁止加载开源驱动
+\begin{verbatim}
+echo "blacklist radeon"> /etc/modprobe.d/50-fglrx.conf
+\end{verbatim}
+刷新一下模块,重新加载动态库，加载新驱动，刷新initrd, reboot
+\begin{verbatim}
+depmod -a
+ldconfig
+modprobe -v fglrx
+mkinitrd
+reboot
+\end{verbatim}
+重新查看驱动
+\begin{verbatim}
+hwinfo --display
+22: PCI 700.0: 0300 VGA compatible controller (VGA)             
+  [Created at pci.318]
+  Unique ID: aK5u.UIwW5Y0NdeA
+  Parent ID: vSkL.zHaCuV+XoH8
+  SysFS ID: /devices/pci0000:00/0000:00:01.0/0000:07:00.0
+  SysFS BusID: 0000:07:00.0
+  Hardware Class: graphics card
+  Model: "ATI M66-P [Mobility Radeon X1700]"
+  Vendor: pci 0x1002 "ATI Technologies Inc"
+  Device: pci 0x71d5 "M66-P [Mobility Radeon X1700]"
+  SubVendor: pci 0x1043 "ASUSTeK Computer Inc."
+  SubDevice: pci 0x1242 
+  Driver: "fglrx_pci"
+  Driver Modules: "fglrx"
+  Memory Range: 0xc0000000-0xcfffffff (ro,non-prefetchable)
+  I/O Ports: 0xd000-0xd0ff (rw)
+  Memory Range: 0xfe0f0000-0xfe0fffff (rw,non-prefetchable)
+  Memory Range: 0xfe0c0000-0xfe0dffff (ro,non-prefetchable,disabled)
+  IRQ: 16 (35 events)
+  I/O Ports: 0x3c0-0x3df (rw)
+  Module Alias: "pci:v00001002d000071D5sv00001043sd00001242bc03sc00i00"
+  Driver Info #0:
+    Driver Status: radeon is active
+    Driver Activation Cmd: "modprobe radeon"
+  Driver Info #1:
+    Driver Status: fglrx is active
+    Driver Activation Cmd: "modprobe fglrx"
+  Config Status: cfg=no, avail=yes, need=no, active=unknown
+  Attached to: #9 (PCI bridge)
+
+Primary display adapter: #22
+
+\end{verbatim}
+可以看到fglrx已经代替drm了，运行emacs等也不花屏了。
+\section{参考}
+\href{ATI HD57xxx fglrx drivers under 11.3 & 11.4}{http://lizards.opensuse.org/2010/07/15/ati-hd57xxx-flgrx-drivers-under-11-3/}
+\input{../readme}
+\end{document}

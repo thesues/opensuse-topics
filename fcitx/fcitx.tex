@@ -1,0 +1,188 @@
+\documentclass[adobefonts]{ctexart}
+%\documentclass[winfonts]{ctexart}
+
+\CTEXoptions[captiondelimiter={\quad}]
+
+
+\usepackage{amsmath}            % AMS的数学宏包
+\usepackage{amssymb}            % AMS的数学符号宏包
+\usepackage{graphicx}           % 插入图片需要的宏包
+\usepackage{float}              % 强大的浮动环境控制宏包
+\usepackage{framed}             % `shaded'环境需要用到
+\usepackage{enumitem}           % 增强列表功能
+\usepackage{alltt}              % 在`alltt'环境中为等宽字体, 但可以使用LaTeX命令
+
+% \usepackage{shortvrb}           % 简化\verb的写法
+% \MakeShortVerb{\|}
+\usepackage{listings}
+\lstset{language=bash}
+\lstset{extendedchars=false}
+\lstset{breaklines}
+\lstset{stepnumber=2}
+\lstset{backgroundcolor=\color{lightgray}}
+
+
+\usepackage{color}              % 可以定义各种颜色
+\usepackage[x11names]{xcolor}   % 下面的RoyalBlue3颜色需要用到的宏包
+% 自定义的几种颜色
+\definecolor{shadecolor}{gray}{0.85}
+
+% \definecolor{darkblue}{rgb}{52,101,164}
+% \definecolor{darkgreen}{rgb}{78,154,6}
+
+% % 设置背景颜色
+% \definecolor{bisque}{rgb}{.996,.891,.755}
+% \pagecolor{bisque}
+
+\usepackage[pdfauthor={Dreamseeker},
+  pdftitle={openSUSE 11.4 安装fcitx小企鹅输入法},
+  colorlinks=true,
+  urlcolor=blue,
+  linkcolor=RoyalBlue3]{hyperref} % 为超链接设置颜色, 修改PDF文件信息
+
+%\CTEXsetup[name={实验,},number={\chinese{section}}]{section}
+
+
+\title{\textbf{openSUSE 11.4 安装fcitx小企鹅输入法}}
+\author{kroodylove@gmail.com}
+% \date{}
+
+\usepackage[pagestyles]{titlesec} % 定制页眉页脚
+% % 设置页眉页脚
+% \newpagestyle{main}{%
+%   \sethead[$\cdot$~\thepage~$\cdot$][][\thesection\quad%
+%   \sectiontitle]{\thesection\quad\sectiontitle}{}{%
+%   $\cdot$~\thepage~$\cdot$}
+%   \setfoot{}{}{}\headrule}
+% \pagestyle{main}
+% \renewpagestyle{plain}{\sethead{}{}{}\setfoot{}{}{}}
+\pagestyle{plain}
+
+\usepackage[top=0.75in,bottom=0.5in,left=1in,right=1in]{geometry} % 设置页边距
+
+\setlength{\belowcaptionskip}{1em} % 设置caption之后的距离
+
+% For LaN
+\newcommand{\LaN}{L{\scriptsize\hspace{-0.47em}\raisebox{0.23em}{A}}\hspace{-0.1em}N}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\newpage
+\section{我为什么使用fcitx}
+其实自从去年我就在openSUSE11.3上开始使用fcitx（小企鹅）输入法了，原因很简单原来用默认的SCIM在跟朋友聊天的时候老得选字（用五笔的朋友飘过）特别麻烦，自带的词库有限啊。实在不如windows下的搜狗之类的来的爽，其实很早就关注fcitx了当时折腾了几下没好用就扔下了，过了很久才又重新拿出来配置起来用试试看吧，感觉还不错界面做的比原来好看很多而且速度快了很多，还支持换肤  统计打字速度等功能（甭管有用没用人家有就是亮点对吧）其他的要靠使用者去体会了。
+
+我想写出来这个的原因也挺简单的，近期在openSUSE11.4发布后（什么 你不知道？！）
+
+\href{http://www.opensuse.org}{www.opensuse.org}
+
+社区里面很多朋友说自带的SCIM或者Ibus输入法或多或少有些问题。例如在firefox里面不好用，或者在Libreoffice里面有问题之类，虽然我机器上没发现上述现象（难道是RP好？），但还是写出来供大家参考一下吧。
+
+文章放到了下面的地址，相信你能找到你所要的东东
+
+\href{http://code.google.com/p/opensuse-topics/}{http://code.google.com/p/opensuse-topics/}
+
+\section{安装配置fcitx}
+\subsection{获得fcitx}
+fcitx我原来装的是3.6版本的，现在已经更新到4.0
+在上面的地址可以下载到源码和找到很多帮助，另外网上也一搜一堆的配置
+
+\href{http://www.fcitx.org/main/}{http://www.fcitx.org/main/}
+
+\href{http://code.google.com/p/fcitx/}{http://code.google.com/p/fcitx/}
+
+\subsection{前期准备工作}
+
+要注意的是如果你是英文默认安装完openSUSE11.4的话你还需要装几个输入法相关的包，如果和我一样懒就这么干在yast里面将language选成中文
+这时候会装上SCIM和相关的包。如果已经是中文的就继续下一步：在命令行下切到root，删掉scim或者ibus输入法
+\begin{verbatim}
+zypper rm scim
+\end{verbatim}
+这样就可以了
+语言看你喜好了 中文英文都可以，下面开始安装fcitx
+\subsection{编译安装}
+下面来正式安装拉
+\subsubsection{第一步：（把冰箱门打开...）}
+在终端命令行下到你源码所在目录：
+\begin{verbatim}
+tar zxf fcitx-4.0.1_all.tar.gz
+cd fcitx-4.0.1/
+./configure && make
+\end{verbatim}
+编译完成后sudo make install就可以了
+\subsubsection{第二步：（把大象放冰箱...）} % (fold)
+要修改系统几个配置文件,
+vim ~/.bashrc加入下面三行
+\begin{verbatim}
+export XMODIFIERS="@im=fcitx"
+export XIM=fcitx
+export XIM_PROGRAM=fcitx
+\end{verbatim}
+切换到root
+\begin{verbatim}
+su
+vim /etc/X11/xim
+\end{verbatim}
+改成这样
+\begin{verbatim}
+export XMODIFIERS="@im=fcitx"
+\end{verbatim}
+ 保存退出
+上面XIM在系统注册的名字为fcitx。应用程序启动的时候会根据该变量查找相应的XIM服务器。
+下一个文件是
+\begin{verbatim}
+vim /etc/sysconfig/language 
+INPUT_METHOD="fcitx"
+\end{verbatim}
+然后进入到目录/etc/X11/xim.d
+添加一个名字为fcitx的文件，内容如下
+\begin{verbatim}
+OLD_PATH=$PATH
+PATH=/usr/local/bin:/usr/bin:/opt/kde3/bin:$PATH
+
+if ! type -p fcitx > /dev/null 2>&1 ; then
+    echo "fcitx is not available."
+    return 1
+fi
+
+export XMODIFIERS=@im=fcitx
+export GTK_IM_MODULE=fcitx
+export QT_IM_SWITCHER=imsw-multi
+export QT_IM_MODULE=fcitx
+case "$WINDOWMANAGER" in
+    /opt/kde3/bin/startkde)
+        if ! type -p skim > /dev/null 2>&1 \
+          || grep -i -q "^[[:space:]]*Autostart.*=.*false" $HOME/.kde/share/config/skimrc
+        then
+            fcitx -d
+        else
+        # skim will be  used. But we don't start it here,
+        # we rely on the KDE3 autostart
+        # mechanism used in the skim package instead.
+        # skim -d
+        :
+        fi
+    ;;
+    *)
+        fcitx -d
+    ;;
+esac
+
+PATH=$OLD_PATH
+
+# success:
+return 0
+
+\end{verbatim}
+\subsubsection{第三步：（把冰箱门带上...）}
+好了，还有最后一个地方，我们要让每次进桌面让输入法启动起来才可以
+鼠标点击Computer，选Control Center---Startup Applications（中文界面的话自己翻译着看吧就是开始菜单 控制中心 里面的会话拉）
+
+点添加，名字随便起 就叫fcitx吧 运行命令就是
+\begin{verbatim}
+/usr/local/bin/fcitx（编译时候./configure 是默认路径就是这个）
+\end{verbatim}
+保存退出就可以了
+\input{../readme}
+\end{document}
