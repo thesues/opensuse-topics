@@ -1,28 +1,37 @@
-SRC=$(wildcard *.tex)
-TARGET=$(patsubst %.tex,%.pdf,${SRC})
+MARKDOWNSRC=$(wildcard *.markdown)
+TOP := $(shell basename `pwd`)
+TARGET=$(patsubst %,%.pdf,${TOP})
+TEXSRC=$(patsubst %,%.tex,${TOP})
+#SRC=$(wildcard *.tex)
 SVNVERSION=$(shell svn info|awk '$$1 ~ /^(版本:|Revision:)/{print $$2}')
 PDFTARGET=$(patsubst %.pdf,%-r${SVNVERSION}.pdf,${TARGET})
 title=$(shell sed -ne 's/title{\(.*\)}/\1/p' ${SRC})
-.PHONY:clean html download view blog
-all:${PDFTARGET}
+
+.PHONY:clean html download view blog latex tex start
+all:${TARGET}
 clean:
 	rm -rf *.pdf
 	rm -rf *.out
 	rm -rf *.log
 	rm -rf *.toc
 	rm -rf *.aux
+
+tex:${TEXSRC}
+latex:${TEXSRC}
 %.pdf:%.tex %.toc
 	xelatex  $< 
 %.toc:%.tex
 	xelatex  $<
+%.tex:%.markdown %.meta
+	../maketex.py $<
 ${PDFTARGET}:${TARGET}
 	cp $< ${PDFTARGET}
-html:${SRC}
+
+#TODO to use markdown file to html insdead of latex
+html:${TEXSRC}
 	latex2html -local_icons -html_version 4.0,latin1,unicode $<
-blog:${SRC}
+blog:${TEXSRC}
 	latex2html -lcase_tags -mkdir -dir blog -split 0 -nonavigation -noinfo -html_version 4.0,latin1,unicode $<
-publish:${SRC}
-	python ../blog-upload-my.py $<
 download:${PDFTARGET}
 	@echo "now publish $< to code.google.com..."
 	@echo "please make sure you have googlecode_upload.py in your path!"
