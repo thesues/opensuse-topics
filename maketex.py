@@ -29,12 +29,12 @@ if os.path.exists(metafile):
     for line in open(metafile,"r"):
         segs=line.split("=");
         if segs[0] == "title":
-            title = segs[1]
+            title = segs[1].strip()
         if segs[0] == "author":
-            author = segs[1]
+            author = segs[1].strip()
         if segs[0] == "date":
-            date == segs[1]
-    meta_header="\\title{\\textbf{%s}}\n\\author{%s}\n\\date{%s}\n" % (title, author, date)
+            date == segs[1].strip()
+    meta_header="\\title{%s}\n\\author{%s}\n\\date{%s}\n" % (title, author, date)
 else:
     print "hey, you have not a meta file to indicate who you are and the title for your article"
 
