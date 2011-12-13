@@ -11,6 +11,7 @@ start:
 			cp article_template/makefile $${newname};\
 			touch $${newname}/$${newname}.markdown;\
 			touch $${newname}/$${newname}.meta;\
+			echo -e "title=\nauthor=\ndate=\n" >> $${newname}/$${newname}.meta; \
 			echo "It's ok to cd $${newname} to write ! have fun!";\
 			break;\
 		fi \

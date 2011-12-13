@@ -5,7 +5,7 @@ TEXSRC=$(patsubst %,%.tex,${TOP})
 #SRC=$(wildcard *.tex)
 SVNVERSION=$(shell git log --pretty=oneline |wc -l )
 PDFTARGET=$(patsubst %.pdf,%-r${SVNVERSION}.pdf,${TARGET})
-title=$(shell sed -n "s/\\\title{\(.*\)}/\1/p" ${TEXSRC})
+title=$(shell sed -n 's/\\title{\(.*\)}/\1/p' ${TEXSRC})
 
 .PHONY:clean html download view blog latex tex start
 all:${TARGET}
