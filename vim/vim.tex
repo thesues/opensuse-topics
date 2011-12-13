@@ -69,6 +69,85 @@
 \maketitle
 \tableofcontents
 \newpage
+
+\section{vim的乱码问题}
+在很少的情况下，vim也会出现乱码，不用去抱怨vim的配置复杂，只要明白各个配置的含义，就可以逸劳永逸的解决它
+
+关于编码，一共是这4个选项
+\begin{itemize}
+\item encoding 
+
+设置vim的内部编码，与文件的具体编码也没有关系。通常是改成utf-8就不用再动了
+
+\item termencoding 
+
+在命令行模式的情况下，设置编码，\textbf{一定要与term的编码一致},比如term是utf-8,那么termencoding也应该是utf-8.同样如果term是GBK编码，那termencoding也要是GBK编码. 这个问题通常会在远程登录时出现，比如putty和securyCRT都可以改自己的编码,主要要和termencoding一致. 如果是用gvim的话，这个参数不起作用
+
+\item fileencoding  
+
+有2个用途。1,配置新建一个文件时，文件的默认编码。 2.打开一个已有的文件，通过设置一个与源文件编码不同的fileencoding,再保存。达到iconv的效果。一般情况下fileencoding最好和本地的locale一致. 我以前犯一个错误，发现文件乱码时，用fileencoding修改成别的编码，再保存。这样就把文件越改越乱了。
+
+\item fileencodings
+
+打开的文件会不会乱码，主要靠这个设置了！vim根据fileencodings的顺序判断文件的编码，当encoding设置成utf-8时，默认的顺序是ucs-bom,utf-8,default,latin1,其中"default"表示当前locale的配置. 可以看出这个默认的设置有点儿问题。当default是latin1的时候，而你的文件又是GBK编码的方式，那么就会显示乱码了。如果只对中文而言改成ucs-bom,utf-8,gbk就可以了。删去default，在
+这种情况下，即使locale是8859-15也不会影响中文. 缺点是如果文件是8859-15编码的话，那打开就成乱码了。因为GBK不和8859-15兼容。所以最完整的解决方案还是在所有的地方都使用utf-8编码，就没有问题了
+\end{itemize}
+总的来说打开文件能不能正确显示中文，就只需要了检查encoding, fileencodings, termencoding(fileencoding与打开文件时无关)。检查可以分3步。
+
+1. encoding只要设置成utf-8就不用管了。与乱码无关
+2. 保证termencoding与term的编码一致，并且都支持中文,比如utf-8,GBK,utf-16
+3. 检查fileencodings的编码顺序。一般要求是先ucs-bom,utf-8 然后其他可能的编码，比如GBK。
+
+
+更加详细推荐vim的帮助,非常详细,我也是看vim的帮助学的。
+
+\subsection{场景举例}
+\subsubsection{locale编码utf8时}
+现在一般新linux都是默认utf8，用locale命令检查一下就可以了
+
+set encoding = utf-8
+set termencoding = utf-8
+set fileencoding = utf-8
+set fileencodings = ucs-bom,utf-8,default,gbk
+
+fileencodings加上gbk，即使文件是gbk编码，也没有问题了.
+如果你是ssh上去的，把你的客户端的编码改成utf-8就可以了
+
+\subsubsection{locale编码是GBK}
+vim的内部编码encoding不用改变,termencoding与ssh客户端或者xterm的编码一致
+
+set encoding = utf-8
+set termencoding = GBK
+set fileencoding = GBK
+set fileencodings = ucs-bom,utf-8,default,gbk
+
+\subsubsection{locale编码是8859-15}
+如果系统的编码不兼容GBK.怎么办？比如搞出个8859-15来。
+如果只是自己用的话，当然是改成utf-8! 只要把export LC\_ALL = zh\_CN.utf8,就ok了
+如果必须这样的话，那显然bash里就不可以输入中文了(因为bash认为编码是8859-1, 如果还可以敲入中文,但是删除的总是半个汉字，说明
+你的term还是支持中文的，bash已经不支持了). 在这种情况下，只要term还能显示中文，也可以通过设置vim达到编辑中文的功能！
+
+set encoding = utf-8
+
+内部编码始终不用变
+set termencoding = utf-8
+
+term的编码始终要与termencoding一直，但一定要是支持中文的编码，比如gbk,utf8 
+
+set fileencoding = utf-8
+
+如果你要在新文件里输入中文，必须要用支持中文的编码了，如果不需要输入中文，那就改成8859-15，与locale一致.
+
+set fileencodings = ucs-bom,utf-8,gbk
+
+去掉default，因为default是8859-15,会比gbk先匹配到, 并且显示出乱码
+
+在locale不支持的情况下还搞中文，何必对自己这么坏呢？
+
+总的来说只有这些需要注意的地方,vim的3个选项和term的编码。可能有时候你会发现在bash里无法输入中文，或者删除中文的时候只删除半个汉字，那是因为
+1.本地的locale与你的term的编码不一致。 或者 2. locale编码和term一样了，但是编码却不支持中文。只要注意这2个问题，bash中
+的乱码也好解决.
+
 \section{vim的奇巧淫技}
 使用vim这个编辑器也很长时间了，从最初不知道怎么退出，到后来自己修改插件，但是仍然发现
 有很多强大的功能没有用到,vim的基本用法已经介绍的够多了的，不需赘述，各种插件也各具特色,
