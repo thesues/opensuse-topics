@@ -1,8 +1,9 @@
 #引言
 
-凡是配过linux防火墙的同学都知道，干这个活很繁琐，而且容易出错。以前一直是自己手动配置iptables，把iptables放到一个sh文件里，开机运行。但是有2个缺点， 第一是如果很久没写过，语法可能都记得不太清楚，本来一个很简单的配置，还得折腾一会。外一个缺点是配置iptables的时候，如果不小心可能就把自己关在防火墙外面了，如果是用ssh远程登录的话，就只能重启服务器了。所以每次手动写iptables，总觉得心里没底。对于第二点， 倒是有简单的解决办法， 就是在crontab里搞个定时任务，每过半个小时就清空iptables一次， 这样就不用麻烦管理员重启了，或者写一个iptables命令
+凡是配过linux防火墙的同学都知道，干这个活很繁琐，而且容易出错。以前一直是自己手动配置iptables，把iptables放到一个sh文件里，开机运行。但是有2个缺点， 第一是如果很久没写过，语法可能都记得不太清楚，本来一个很简单的配置，还得折腾一会。外一个缺点是配置iptables的时候，如果不小心可能就把自己关在防火墙外面了，如果是用ssh远程登录的话，就只能重启服务器了。所以每次手动写iptables，总觉得心里没底。对于第二点， 倒是有简单的解决办法， 就是在crontab里搞个定时任务，每过2分钟就关闭iptables一次， 这样就不用麻烦管理员重启了
 
-	iptables -A input establesd
+	#crontab -e
+	*/2  * * * *  SuSEfirewall2 stop
 
 ，保证正在连接中的ssh不会被屏蔽掉，但是不管怎么处理，搞防火墙规则都不是一件
 太容易的事情，并且通常干的事情又都很类似，无非是屏蔽ip，屏蔽端口什么的。
@@ -96,7 +97,7 @@ EXT允许访问的接口
 	#打开ssh接口
 	#ssh的软件包额外安装了文件/etc/sysconfig/SuSEfirewall2.d/services/sshd
 	#sshd文件里面只有一行
-	#TCP="ssh"，说明sshd服务打开*ssh*端口，*ssh*对应于/etc/services下的22
+	#TCP="ssh"，说明sshd服务打开ssh端口，ssh对应于/etc/services下的22
 	FW_CONFIGURATIONS_EXT="sshd"
 
 在软件包没有安装service文件的情况下，比如pptpd就没有提供service文件，也可以用下面的参数直接配置
