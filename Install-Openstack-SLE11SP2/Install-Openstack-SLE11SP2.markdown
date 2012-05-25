@@ -88,7 +88,7 @@ SERVICE_TOKEN与之前的admin_token对应，也是suse. ADMIN\_PASSWORD是以�
 
 	export OS_TENANT_NAME=admin
 	export OS_USERNAME=admin
-	export OS_PASSWORD=novell
+	export OS_PASSWORD=suse
 	export OS_AUTH_URL="http://localhost:5000/v2.0/"
 
 运行keystone user-list
@@ -261,6 +261,25 @@ waring可以忽略
 显示所以的镜像
 
 	nova image-list
+
+##配置nova-volumes
+
+创建vg nova-volumes, 这里/dev/sda9是一个pv
+	
+	pvcreate /dev/sda9
+	vgcreate nova-volumes /dev/sda9
+
+在control节点，也就是vg所在的节点打开iscsi-target
+	
+	rciscsitarget start	
+
+在所有的计算节点， 打开open-iscsi
+	
+	rcopen-iscsi start
+
+这样这些volumes就可以动态的添加到虚拟机中,参见[文档](http://docs.openstack.org/trunk/openstack-compute/admin/content/managing-volumes.html)
+
+
 
 #第一台虚拟机
 
