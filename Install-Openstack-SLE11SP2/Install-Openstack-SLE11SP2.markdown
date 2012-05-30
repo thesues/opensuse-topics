@@ -3,6 +3,7 @@
 	zypper ar -f http://download.opensuse.org/repositories/isv:\
 	/B1-Systems:/OpenStack:/release:/Essex:/requirements/SLE_11_SP2/  openstack_reqires
 
+    zypper ar -f http://download.suse.de/full/full-sle11-sp2-x86_64  sle11_sp2
 	zypper ar -f http://download.suse.de/ibs/Devel:/Cloud/SLE_11_SP2/ openstack
 
 安装基本按照[这里](http://www.hastexo.com/resources/docs/installing-openstack-essex-20121-ubuntu-1204-precise-pangolin)的进行就可以,
@@ -30,6 +31,28 @@
 	
 	rcrabbitmq-server start
 
+#安装 mysql
+
+    zypper in mysql mysql-client python-mysql
+
+启动mysql
+
+    service mysql start    
+
+建立用户（后面nova, glance会用到)
+
+    mysql -u root <<EOF
+    CREATE DATABASE nova;
+    GRANT ALL PRIVILEGES ON nova.* TO 'novadbadmin'@'%' 
+      IDENTIFIED BY 'suse';
+    EOF
+
+    mysql -u root <<EOF
+    CREATE DATABASE glance;
+    GRANT ALL PRIVILEGES ON glance.* TO 'glancedbadmin'@'%' 
+      IDENTIFIED BY 'suse';
+    EOF
+
 #安装keystone
 
 keystone是openstack的认证系统
@@ -40,7 +63,7 @@ keystone默认使用sqlite数据库, 这里不用修改.
 
 ##修改keystone配置文件
 
-修改/etc/keystone/keystone.conf, catalog部分改为
+修改/etc/keystone/keystone.conf, catalog部分改为（或保持不变)
 
 	[catalog]
 	driver = keystone.catalog.backends.templated.TemplatedCatalog
@@ -58,6 +81,10 @@ keystone默认使用sqlite数据库, 这里不用修改.
 	catalog.RegionOne.identity.publicURL = http://147.2.207.105:$(public_port)s/v2.0
 	catalog.RegionOne.identity.adminURL = http://147.2.207.105:$(admin_port)s/v2.0
 	catalog.RegionOne.identity.internalURL = http://147.2.207.105:$(public_port)s/v2.0
+
+启动keystone
+
+	rcopenstack-keystone start
 
 ##建立admin用户
 
@@ -77,10 +104,6 @@ SERVICE_TOKEN与之前的admin_token对应，也是suse. ADMIN\_PASSWORD是以�
 如果没有输出，表示一切正常.如果使用sqlite3有可能出现没有权限的问题，这时候
 
 	chown keystone:keystone <your_sqlite3_file>
-
-启动keystone
-
-	rcopenstack-keystone start
 
 ##检查keystone运行正常
 
@@ -133,7 +156,9 @@ SERVICE_TOKEN与之前的admin_token对应，也是suse. ADMIN\_PASSWORD是以�
 
 ##编辑sql连接
 
-编辑文件/etc/glance/glance-registry.conf,具体见参考资料
+编辑文件/etc/glance/glance-registry.conf
+
+    sql_connection = mysql://glancedbadmin:suse@147.2.207.105/glance
 
 ##启动检查glance
 
@@ -184,7 +209,7 @@ nova的配置文件比较简单，只有2个配置文件需要修改, 打开/etc
 	--force_dhcp_release=True
 	--flat_network_bridge=br0
 	--firewall_driver=nova.virt.libvirt.firewall.IptablesFirewallDriver
-	--sql_connection=mysql://root@192.168.3.1/nova
+	--sql_connection=mysql://novadbadmin:suse@192.168.3.1/nova
 	--s3_host=147.2.207.105
 	--s3_port=3333
 	--ec2_url=http://147.2.207.105:8773/services/Cloud
@@ -226,7 +251,7 @@ nova的配置文件比较简单，只有2个配置文件需要修改, 打开/etc
 启动nova
 
 	for i in nova-cert nova-network nova-compute nova-api nova-objectstore \
-		 nova-scheduler nova-volume nova-consoleauth ;\
+		 nova-scheduler nova-volume nova-consoleauth novncproxy nova-vncproxy;\
 	do \
 	  rcopenstack-${i} restart; \
 	  sleep 1; \
