@@ -194,7 +194,7 @@ nova的配置文件比较简单，只有2个配置文件需要修改, 打开/etc
 	--dhcpbridge=/usr/bin/nova-dhcpbridge
 	--logdir=/var/log/nova
 	--state_path=/var/lib/nova
-	--my_ip=192.168.3.1
+	--my_ip=147.2.207.105
 	--verbose=True
 	--public_interface=eth0
 	--instance_name_template=instance-%08x
