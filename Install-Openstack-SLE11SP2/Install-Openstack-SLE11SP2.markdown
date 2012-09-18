@@ -1,10 +1,13 @@
 #准备软件源
 
-	zypper ar -f http://download.opensuse.org/repositories/isv:\
-	/B1-Systems:/OpenStack:/release:/Essex:/requirements/SLE_11_SP2/  openstack_reqires
+下载suse cloud iso
 
-    zypper ar -f http://download.suse.de/full/full-sle11-sp2-x86_64  sle11_sp2
-	zypper ar -f http://download.suse.de/ibs/Devel:/Cloud/SLE_11_SP2/ openstack
+  wget http://download.suse.de/install/SLE-11-SP2-CLOUD-GM/
+
+升级python
+
+  zypper ar -f http://download.suse.de/full/full-sle11-sp2-x86\_64/ full
+
 
 安装基本按照[这里](http://www.hastexo.com/resources/docs/installing-openstack-essex-20121-ubuntu-1204-precise-pangolin)的进行就可以,
 文对其中没有提到的做补充
@@ -88,7 +91,7 @@ keystone默认使用sqlite数据库, 这里不用修改.
 
 ##建立admin用户
 
-使用脚本keystone\_data.sh(来自项目devstack)注入数据,修改其中的变量为
+使用脚本keystone\_data.sh(来自项目devstack)注入数据[这里下载](./keystone_data.sh),修改其中的变量为
 
 	ADMIN_PASSWORD=${ADMIN_PASSWORD:-suse}
 	SERVICE_PASSWORD=${SERVICE_PASSWORD:-$ADMIN_PASSWORD}
@@ -104,6 +107,10 @@ SERVICE_TOKEN与之前的admin_token对应，也是suse. ADMIN\_PASSWORD是以�
 如果没有输出，表示一切正常.如果使用sqlite3有可能出现没有权限的问题，这时候
 
 	chown keystone:keystone <your_sqlite3_file>
+
+如果是用suse close iso安装的话，改为
+
+  chown openstack-keystone:openstack-keystone /var/lib/keystone/keystone.db
 
 ##检查keystone运行正常
 

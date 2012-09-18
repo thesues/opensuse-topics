@@ -57,7 +57,7 @@ csync2-1.34.tar.gz是源代码包, .patch和.diff都是以前修bug的patch，.c
 package对应与rpm包，一般package和rpm包是一对一关系，比如device-mapper的package就会build出
 device-mapper的rpm包, 也有一对多的情况，就是一个package可以build出多个rpm包，这些都由spec控制
 
-#使用osc
+#osc下载package
 
 osc类似与svn之类的工具,[osc用法](http://en.opensuse.org/openSUSE:Build_Service_Collaboration)
 
@@ -122,22 +122,34 @@ quilt命令读spec文件，把spec文件中提到的source包解压缩，把spec
 
 注意这些操作一定要在LVM2.2.02.84目录下进行
 
-	#检查所有patch
+检查所有patch
+
 	quilt serise
-	#打上所有patch
+
+打上所有patch
+
 	quilt push -a
-	#检查正在操作的patch
+
+检查正在操作的patch
+
 	quilt top
 
 ###创建你的patch
 
-	#创建	
+创建新patch,名称my_patch_bug.patch	
+
 	quilt new my_patch_bug.patch
-	#file是你打算修改的文件
+
+file是你打算修改的文件
+
 	quilt edit file
-	#检查修改结果
+
+检查修改结果
+
 	quilt diff
-	#把diff的结构刷到my_patch_bug.patch中
+
+把diff的结构刷到my_patch_bug.patch中
+
 	quilt refresh
 	
 
@@ -195,10 +207,3 @@ quilt可以自动跟踪你的修改结果，可以根据quilt的文档，多练�
 	osc -A https://api.suse.de submitrequest  -m"bnc@11111, I have fixed" \ 
 	SUSE:SLE-11-SP2:Update:Test 
 
-
-
-
-
-
-
-	
