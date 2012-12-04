@@ -2,12 +2,16 @@
 
 下载suse cloud iso
 
-  wget http://download.suse.de/install/SLE-11-SP2-CLOUD-GM/
+	wget http://download.suse.de/install/SLE-11-SP2-CLOUD-GM/
 
 升级python
 
-  zypper ar -f http://download.suse.de/full/full-sle11-sp2-x86\_64/ full
+	zypper ar -f http://download.suse.de/full/full-sle11-sp2-x86\_64/ full
 
+check iptables version, not higher than 1.4.7
+	
+	rpm -q iptables 
+       	
 
 安装基本按照[这里](http://www.hastexo.com/resources/docs/installing-openstack-essex-20121-ubuntu-1204-precise-pangolin)的进行就可以,
 文对其中没有提到的做补充
@@ -60,7 +64,7 @@
 
 keystone是openstack的认证系统
 
-	zypper in openstack-keystone
+	zypper in openstack-keystone  python-keystoneclient
 
 keystone默认使用sqlite数据库, 这里不用修改. 
 
@@ -77,6 +81,7 @@ keystone默认使用sqlite数据库, 这里不用修改.
 	admin_token=suse
 
 /etc/keystone/default\_catalog.templates从相同文件夹下的samples文件得到，修改 %SERVICE\_HOST%为对外的IP
+获得default_catalog.templates文件时，确保owner为openstack-keystone
 
 	openstack01:/etc/keystone # head  default_catalog.templates
 	# config for TemplatedCatalog, using camelCase because I don't want to do
@@ -84,6 +89,10 @@ keystone默认使用sqlite数据库, 这里不用修改.
 	catalog.RegionOne.identity.publicURL = http://147.2.207.105:$(public_port)s/v2.0
 	catalog.RegionOne.identity.adminURL = http://147.2.207.105:$(admin_port)s/v2.0
 	catalog.RegionOne.identity.internalURL = http://147.2.207.105:$(public_port)s/v2.0
+
+	catalog.RegionOne.s3.publicURL = http://147.2.207.105:3333
+	catalog.RegionOne.s3.adminURL = http://147.2.207.105:3333
+	catalog.RegionOne.s3.internalURL = http://147.2.207.105:3333
 
 启动keystone
 
@@ -102,6 +111,7 @@ SERVICE_TOKEN与之前的admin_token对应，也是suse. ADMIN\_PASSWORD是以�
 的密码。SERVICE\_ENDPOINT指向本机的外网IP. 以上配置完成后，运行
 
 	keystone-manage db_sync
+	rcopenstack-keystone start
 	./keystone_data.sh
 
 如果没有输出，表示一切正常.如果使用sqlite3有可能出现没有权限的问题，这时候
@@ -137,7 +147,7 @@ SERVICE_TOKEN与之前的admin_token对应，也是suse. ADMIN\_PASSWORD是以�
 
 #安装glance
 
-	zypper in openstack-glance
+	zypper in openstack-glance python-glanceclient
 
 ##添加keystone密码
 
@@ -178,14 +188,19 @@ SERVICE_TOKEN与之前的admin_token对应，也是suse. ADMIN\_PASSWORD是以�
 
 ##上传虚拟机镜像
 
-	glance add name="sles-sp1" is_public=true container_format=ovf disk_format=qcow2 < sles11sp1.img
-	glance index
+	glance --os-username=admin --os-password=suse --os-tenant-name=admin --os-auth-url=http://127.0.0.1:5000/v2.0 image-create --name="sles11-sp2" --is-public=true --container-format=ovf --disk-format=qcow2 < SLES\_11\_SP2.x8\6_64-0.0.1.raw
+	glance --os-username=admin --os-password=suse --os-tenant-name=admin --os-auth-url=http://127.0.0.1:5000/v2.0 image-list
 
 #安装nova
 	
 nova是openstack的核心, 
 
 	zypper in openstack-nova
+
+add openstack-nova to sudo list
+
+	visudo
+	add line "openstack-nova  ALL=(ALL) NOPASSWD:ALL"
 
 ##nova的配置文件
 
@@ -201,6 +216,7 @@ nova的配置文件比较简单，只有2个配置文件需要修改, 打开/etc
 	--dhcpbridge=/usr/bin/nova-dhcpbridge
 	--logdir=/var/log/nova
 	--state_path=/var/lib/nova
+	--lock_path=/var/lock/nova
 	--my_ip=147.2.207.105
 	--verbose=True
 	--public_interface=eth0
@@ -358,6 +374,7 @@ dashboard是openstack的web管理端,用django实现
 如果没有修改过配置文件，sqlite3的数据库文件名称是dashboard\_openstack.sqlite,修改权限
 
 	chown wwwrun:www /var/lib/openstack-dashboard/openstack_dashboard/local/dashboard_openstack.sqlite3
+	chown -R wwwrun:www /var/lib/openstack-dashboard/
 
 ##修改apache配置文件
 
