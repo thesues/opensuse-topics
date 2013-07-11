@@ -15,6 +15,8 @@ clean:
 	rm -rf *.log
 	rm -rf *.toc
 	rm -rf *.aux
+	rm -rf *.html
+	if test -f *.markdown; then rm -rf *.tex ;fi
 
 tex:${TEXSRC}
 latex:${TEXSRC}
