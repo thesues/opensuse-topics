@@ -92,14 +92,14 @@ rpmbuild要求spec文件，src文件在/usr/src下，比较麻烦，下面的脚
 	mount_current_diretory()
 	{
 		src=~/rpmbuild/SOURCES
-		if test -d $src -a -h $src
+		if test -d $src -o -h $src
 		then
 			echo "delete previous link"
-			rm $src
+			rm -rf $src
 		elif test -f $src
 		then
 			echo "delete previous file"
-			rm $src
+			rm -rf $src
 		elif test -d $src
 		then
 			echo "$src is not a symlink,quit.."
@@ -107,7 +107,6 @@ rpmbuild要求spec文件，src文件在/usr/src下，比较麻烦，下面的脚
 		fi
 
 		echo "create link $src"
-		rm -rf $src
 		ln -s \`pwd\` $src
 	}
 
@@ -138,7 +137,7 @@ rpmbuild要求spec文件，src文件在/usr/src下，比较麻烦，下面的脚
 
 ## 生成patch
 	
-	git format-patch HEAD~2 -o ./patches --cover-letter -M 
+	git format-patch HEAD~2 -o ./patches --cover-letter -M  -n --thread=shallow
 
 注意参数
 
@@ -166,6 +165,9 @@ http://sourceware.org/systemtap/tapsets/index.html
 
 * taobao script
 http://blog.yufeng.info/archives/tag/systemtap
+
+* ibm redbook
+http://www.redbooks.ibm.com/redpapers/pdfs/redp4469.pdf
 
 我的一个脚本
 
