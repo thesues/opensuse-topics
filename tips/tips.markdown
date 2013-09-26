@@ -137,7 +137,7 @@ rpmbuild要求spec文件，src文件在/usr/src下，比较麻烦，下面的脚
 
 ## 生成patch
 	
-	git format-patch HEAD~2 -o ./patches --cover-letter -M  -n --thread=shallow
+	git format-patch HEAD~2 -o ./patches --cover-letter -M -n --thread=shallow
 
 注意参数
 
@@ -149,7 +149,7 @@ HEAD~2 表示最近的2个commits
 
 ## 发邮件	
 
-	git send-email ./patches --to=maillist@maillist.com
+	git send-email --chain-reply-to --suppress-from ./patches --to=maillist@maillist.com
 
 
 # systemtap 
