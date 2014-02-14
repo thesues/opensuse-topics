@@ -18,15 +18,19 @@
 3. cd /usr/src/linux/drivers/md
 
 4. make -C /lib/modules/\`uname -r\`/build M=\`pwd\` modules
+
 	 #其中/lib/modules/\`uname -r\`/build/指向kernel-devel安装的一些objs
 
 5. make -C /lib/modules/\`uname -r\`/build M=\`pwd\` modules\_install
+
 	 #会安装到/lib/modules/\`uname -r\`/extra下面
 
 6. #检查/lib/modules/\`uname -r\`/modules.dep, 如果没有更新
+
 	 depmod
 
 7. #如果需要更新initrd,
+
 	 mkinitrd
 
 这种方法充分利用了发行版提供的kernel-devel中的文件. 在保证使用相同kernel的情况下，
@@ -149,7 +153,7 @@ HEAD~2 表示最近的2个commits
 
 ## 发邮件	
 
-	git send-email --chain-reply-to --suppress-from ./patches --to=maillist@maillist.com
+	git send-email --thread --no-chain-reply-to --suppress-from ./patches --to=maillist@maillist.com
 
 
 # systemtap 
@@ -225,5 +229,30 @@ http://www.redbooks.ibm.com/redpapers/pdfs/redp4469.pdf
 					printf("\ntotal bio  time : %d ns\n" ,@sum(each_bio_time))
 					printf("===============================\n")
 	}
+
+
+## 读crash文件
+
+	crash> bt 6559
+	PID: 6559   TASK: ffff8818262c85c0  CPU: 0   COMMAND: "lvs"
+	 #0 [ffff881a100f7ab8] schedule at ffffffff8139c604
+	 #1 [ffff881a100f7b70] io_schedule at ffffffff8139c9d2
+	 #2 [ffff881a100f7ba0] sync_page at ffffffff810b6565
+	 #3 [ffff881a100f7bb0] __wait_on_bit at ffffffff8139cf20
+	 #4 [ffff881a100f7bf0] wait_on_page_bit at ffffffff810b6a4c
+	 #5 [ffff881a100f7c40] wait_on_page_writeback_range at ffffffff810b7a54
+	 #6 [ffff881a100f7d20] filemap_write_and_wait_range at ffffffff810b7bcf
+	 #7 [ffff881a100f7d50] generic_file_aio_read at ffffffff810b7fda
+	 #8 [ffff881a100f7de0] do_sync_read at ffffffff810ff703
+	 #9 [ffff881a100f7f10] vfs_read at ffffffff810ffe77
+	#10 [ffff881a100f7f40] sys_read at ffffffff810fffe3
+	#11 [ffff881a100f7f80] system_call_fastpath at ffffffff81002f7b
+	    RIP: 00002b233f0ac560  RSP: 00007fff0e96bb28  RFLAGS: 00010206
+	    RAX: 0000000000000000  RBX: ffffffff81002f7b  RCX: 00007fff0e96bb4f
+	    RDX: 0000000000001000  RSI: 00007fff0e96a000  RDI: 0000000000000004
+	    RBP: 00007fff0e96bbd0   R8: fffffffffffff000   R9: 0000000000001000
+	    R10: 0000000000000001  R11: 0000000000000246  R12: 0000000000000004
+	    R13: 0000000000000000  R14: 00007fff0e96a000  R15: 00000000006abdc8
+	    ORIG_RAX: 0000000000000000  CS: 0033  SS: 002b
 
 
